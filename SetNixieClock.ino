@@ -10,7 +10,7 @@
 //  Fix workaround for daylightsaving
 
 #include <Time.h>
-#include <DS1307RTC.h>  //Arduino Pro Mini I2C: A4 (SDA) und A5 (SCL)
+#include <DS3232RTC.h>  //Arduino Pro Mini I2C: A4 (SDA) und A5 (SCL)
 #include <Wire.h>
 
 const char *monthName[12] = {
@@ -104,7 +104,7 @@ void loop()
     Serial.println(tm.Second);
 
   } else {
-    if (RTC.chipPresent()) {
+   /* if (RTC.chipPresent()) {
       Serial.println("The DS1307 is stopped.  Please run the SetTime");
       Serial.println("example to initialize the time and begin running.");
       Serial.println();
@@ -112,7 +112,7 @@ void loop()
       Serial.println("DS1307 read error!  Please check the circuitry.");
       Serial.println();
     }
-    delay(9000);
+    delay(9000);*/
   }
   delay(1000);
 }
