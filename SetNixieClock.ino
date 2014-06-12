@@ -53,7 +53,6 @@ void setup()
   unixtime = makeTime(tm); 
 
   // Daylight saving time activ (false = standard time, true = daylight saving time +1)
-  int DaylightSavingAtSetup = SommerzeitAktiv(tmYearToCalendar(tm.Year), tm.Month, tm.Day, tm.Hour, tm.Minute);
   // DaylightSaving adjustment, RTC should work with standard time
   if (DaylightSavingAtSetup) unixtime = unixtime - 3600;
 
