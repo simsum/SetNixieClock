@@ -1,18 +1,21 @@
-int WochenTagBerechnen(int Jahr, int Monat, int Tag)   //Wochentag aus dem Datum errechnen
+
+
+//Die Funktion DAY_OF_WEEK berechnet den Wochentag aus dem Eingangsdatum.
+int DAY_OF_WEEK(int Year, int Month, int Day)   
 {
-  int WoTag;
-  int WochenTag;  
+  int WeDay;
+  int Weekday;  
  
-  WoTag = ((((5 * Jahr) + Monatsziffer(Monat)) / 4) + Tag - 1) % 7;  //Zwischenergabnis (0=Son, 1=Mon, usw.)
-  if (WoTag < 1)                                                     //Endergebnis in der richtigen Folge (1=Mon, 2=Die,... 7=Son)
+  WeDay = ((((5 * Year) + Monatsziffer(Month)) / 4) + Day - 1) % 7;  //Zwischenergabnis (0=Son, 1=Mon, usw.)
+  if (WeDay < 1)                                                     //Endergebnis in der richtigen Folge (1=Mon, 2=Die,... 7=Son)
   {
-    WochenTag = 7;
+    Weekday = 7;
   }
   else
   {
-    WochenTag = WoTag;
+    Weekday = WeDay;
   }
-  return WochenTag;
+  return Weekday;
 }
 
 int Monatsziffer (int Monat)                         //Monatskennziffer festlegen (wird u.a. zur Wochentagsberechnung benötigt)
@@ -75,12 +78,6 @@ int Osterkennzahl(int Jahr)                          // Osterkennzahl berechnen 
 return e;
 }
 
-int TagNummer (int Jahr, int Monat, int Tag)      // Tag Nummer berechnen ( 05.01.2012 = 5 .... 31.12.2012 = 366)
-{
-  int sj = SchaltjahrAktiv (Jahr);
-  int TagNr = Tag + ((489 * Monat) / 16) - (7 + Monat) / (10 * (2 - sj)) -30;
-  return TagNr;
-}
 
 
 int BeginnTagSommerzeit (int Jahr)                  // Tag im März - Beginn Sommerzeit (02:00 Uhr)
@@ -99,33 +96,45 @@ int EndeTagSommerzeit (int Jahr)                   // Tag im Oktober - Ende Somm
   return Tag;
 } 
 
-int SchaltjahrAktiv (int Jahr)                     // Schaltjahr aktiv (0 = Nein, 1 = Ja)
+//Die Funktion LEAP_YEAR testet, ob das Eingangsjahr ein Schaltjahr ist und gibt gegebenenfalls TRUE aus.
+//Der Test hat Gültigkeit für den Zeitrum 1970 - 2099. 
+int LEAP_YEAR (int Year)                     // Schaltjahr aktiv (1 = Ja)
 {
-  int sj = (1/(1 + Jahr % 4)) - (1/(1 + Jahr % 100)) + (1/(1 + Jahr % 400));
+  int sj = (1/(1 + Year % 4)) - (1/(1 + Year % 100)) + (1/(1 + Year % 400));
   return sj;
 } 
 
-
-int SommerzeitAktiv (int Jahr, int Monat, int Tag, int Stunde, int Minute)      // Sommerzeit aktiv aktiv (0 = Nein, 1 = Ja)
-{
-  int aktiv;
-  long beginnZW  = TagNummer(Jahr, 3, BeginnTagSommerzeit (Jahr));              // Hilfsvariable
-  long beginn    = (beginnZW *1440) + 120;                                      // Beginn Sommerzeit in "Minuten"
+//Die Funktion DST überprüft, ob im Augenblick Sommerzeit herrscht, oder nicht.
+//Die Sommerzeit wird aufgrund von UTC (Weltzeit) berechnet. 
+bool DST (int Year, int Month, int Day, int Hour, int Minute)       // Sommerzeit aktiv (TRUE wenn Sommerzeit)
+{                                                              
+  bool active;
+  long StartDSInM   = (DAY_OF_YEAR(Year, 3, BeginnTagSommerzeit (Year)) *1440) + 120;  // Beginn Sommerzeit in Minuten                                      // Beginn Sommerzeit in "Minuten"
+  long EndDSInM     = (DAY_OF_YEAR(Year, 10, EndeTagSommerzeit (Year)) * 1440) + 180;  // Ende Sommerzeit in Minuten                                     // Ende Sommerzeit in "Minuten"
+  long NowInMinute  = (DAY_OF_YEAR(Year, Month, Day) * 1440) + (Hour * 60) + Minute;   // aktuelle Minuten im Jahr
   
-  long endeZW    = TagNummer(Jahr, 10, EndeTagSommerzeit (Jahr));               // Hilfsvariable
-  long ende      = (endeZW * 1440) + 180;                                       // Ende Sommerzeit in "Minuten"
-  
-  long aktuellZW = TagNummer(Jahr, Monat, Tag);                                 // Hilfsvariable
-  long aktuell   = (aktuellZW * 1440) + (Stunde * 60) + Minute;                 // Minuten im Jahr
-  
-  if (aktuell >= beginn && aktuell <= ende) {
-    aktiv = true;
-  }
-  else {
-    aktiv = false;
-  }
-  
-  return aktiv;
+  active = NowInMinute >= StartDSInM && NowInMinute <= EndDSInM;                       // Ausgang TRUE wenn Zeitraum innerhalb Sommerzeit
+  return active;
 }
   
+//Die Funktion DAY_OF_YEAR berechnet den Tag des Jahres aus dem Eingangsdatum. 
 
+int DAY_OF_YEAR (int Year, int Month, int Day)      // ( 05.01.2012 = 5 .... 31.12.2012 = 366)
+{
+  int sj = LEAP_YEAR (Year);
+  int DayNbr = Day + 489 * Month / 16 - (7 + Month) / 10 * (2 - sj) -30;
+  return DayNbr;
+} 
+
+// noch zu testende Funktionen !!!
+
+//Die Funktion SUN_MIDDAY berechnet abhängig vom Tagesdatum zu welcher Tageszeit die Sonne exakt im Süden steht. 
+//Die Berechnung erfolgt in UTC (Weltzeit)  
+float SUN_MIDDAY (float Lon, int Year, int Month, int Day)
+{
+  float T = DAY_OF_YEAR(Year, Month, Day);
+  float OFFSET = -0.1752 * sin(0.033430 * T + 0.5474) - 0.1340 * sin(0.018234 * T - 0.1939);
+  float SunMidday = (12.0 - OFFSET - Lon * 0.0666666666666);
+  return SunMidday; 
+  
+} 
