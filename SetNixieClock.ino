@@ -41,6 +41,7 @@ void setup()
   getDate(__DATE__);
   getTime(__TIME__);
 
+
   /*TEST
   tmIDE.Hour = 0;
   tmIDE.Minute = 1;
@@ -118,6 +119,9 @@ void loop()
     }
     delay(9000);*/
   //}
+  
+
+  Serial.println(fmod(5.5,2.5));
   delay(1000);
 }
 
