@@ -10,8 +10,9 @@
 //  Fix workaround for daylightsaving
 
 #include <Time.h>
-#include <DS1307RTC.h>  //Arduino Pro Mini I2C: A4 (SDA) und A5 (SCL)
+#include <DS3232RTC.h>  //Arduino Pro Mini I2C: A4 (SDA) und A5 (SCL)
 #include <Wire.h>
+#include <math.h>
 
 const char *monthName[12] = {
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -40,6 +41,7 @@ void setup()
   getDate(__DATE__);
   getTime(__TIME__);
 
+
   /*TEST
   tmIDE.Hour = 0;
   tmIDE.Minute = 1;
@@ -53,7 +55,7 @@ void setup()
   unixtime = makeTime(tm); 
 
   // Daylight saving time activ (false = standard time, true = daylight saving time +1)
-  int DaylightSavingAtSetup = SommerzeitAktiv(tmYearToCalendar(tm.Year), tm.Month, tm.Day, tm.Hour, tm.Minute);
+  bool DaylightSavingAtSetup = DST(tmYearToCalendar(tm.Year), tm.Month, tm.Day, tm.Hour, tm.Minute);
   // DaylightSaving adjustment, RTC should work with standard time
   if (DaylightSavingAtSetup) unixtime = unixtime - 3600;
 
@@ -89,7 +91,8 @@ void loop()
 {
   // Get data from RTC
 
-  if (RTC.read(tm)) {
+ // if (RTC.read(tm)) {
+    RTC.read(tm);
     Serial.print("Year:   ");
     Serial.println(tmYearToCalendar(tm.Year));
     Serial.print("Month:  ");
@@ -102,9 +105,11 @@ void loop()
     Serial.println(tm.Minute);
     Serial.print("Second: ");
     Serial.println(tm.Second);
-
-  } else {
-    if (RTC.chipPresent()) {
+    float c = RTC.temperature() / 4.;
+    Serial.print("Temperature: ");
+    Serial.println(c);
+ // } else {
+   /* if (RTC.chipPresent()) {
       Serial.println("The DS1307 is stopped.  Please run the SetTime");
       Serial.println("example to initialize the time and begin running.");
       Serial.println();
@@ -112,8 +117,11 @@ void loop()
       Serial.println("DS1307 read error!  Please check the circuitry.");
       Serial.println();
     }
-    delay(9000);
-  }
+    delay(9000);*/
+  //}
+  
+
+  Serial.println(fmod(5.5,2.5));
   delay(1000);
 }
 
