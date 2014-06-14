@@ -14,6 +14,8 @@
 #include <Wire.h>
 #include <math.h>
 
+int TimeZone = +1; //Zeitzone vorgeben
+
 const char *monthName[12] = {
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
   "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
@@ -58,6 +60,7 @@ void setup()
   bool DaylightSavingAtSetup = DST(tmYearToCalendar(tm.Year), tm.Month, tm.Day, tm.Hour, tm.Minute);
   // DaylightSaving adjustment, RTC should work with standard time
   if (DaylightSavingAtSetup) unixtime = unixtime - 3600;
+  unixtime = unixtime - (TimeZone * 3600);      //Zeitzone verrechnen
 
   // Debug Print
   while (!Serial); // wait for Arduino Serial Monitor
