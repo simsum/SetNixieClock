@@ -115,7 +115,7 @@ void loop()
     float c = RTC.temperature() / 4.;
     Serial.print("Temperature: ");
     Serial.println(c);
-    Serial.println(DAYOFYEAR(2014,6,15)); // nur test
+    Serial.println(DayOfYear(2014,6,15)); // nur test
 
   
 
