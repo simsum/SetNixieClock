@@ -122,7 +122,7 @@ bool DST (int Year, int Month, int Day, int Hour, int Minute)       // Sommerzei
 int DAY_OF_YEAR (int Year, int Month, int Day)      // ( 05.01.2012 = 5 .... 31.12.2012 = 366)
 {
   int sj = LEAP_YEAR (Year);
-  int DayNbr = Day + 489 * Month / 16 - (7 + Month) / 10 * (2 - sj) -30;
+  int DayNbr = Day + 489 * Month / 16 - (7 + Month) / 10 * (2 - sj) -30 ;
   return DayNbr;
 } 
 

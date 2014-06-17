@@ -1,3 +1,4 @@
+
 //  Set RTC V2.0.1 by Sven Steinmeier - sven.steinmeier@gmail.com
 //  2014-05-08
 //  Changelog: V2.0.1
@@ -13,6 +14,10 @@
 #include <DS3232RTC.h>  //Arduino Pro Mini I2C: A4 (SDA) und A5 (SCL)
 #include <Wire.h>
 #include <math.h>
+#include <DTutils.h>
+
+
+int TimeZone = +1; //Zeitzone vorgeben
 
 const char *monthName[12] = {
   "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -54,10 +59,12 @@ void setup()
   //Calculate unix time format
   unixtime = makeTime(tm); 
 
+
   // Daylight saving time activ (false = standard time, true = daylight saving time +1)
   bool DaylightSavingAtSetup = DST(tmYearToCalendar(tm.Year), tm.Month, tm.Day, tm.Hour, tm.Minute);
   // DaylightSaving adjustment, RTC should work with standard time
   if (DaylightSavingAtSetup) unixtime = unixtime - 3600;
+  unixtime = unixtime - (TimeZone * 3600);      //Zeitzone verrechnen
 
   // Debug Print
   while (!Serial); // wait for Arduino Serial Monitor
@@ -108,20 +115,11 @@ void loop()
     float c = RTC.temperature() / 4.;
     Serial.print("Temperature: ");
     Serial.println(c);
- // } else {
-   /* if (RTC.chipPresent()) {
-      Serial.println("The DS1307 is stopped.  Please run the SetTime");
-      Serial.println("example to initialize the time and begin running.");
-      Serial.println();
-    } else {
-      Serial.println("DS1307 read error!  Please check the circuitry.");
-      Serial.println();
-    }
-    delay(9000);*/
-  //}
+    Serial.println(DAYOFYEAR(2014,6,15)); // nur test
+
   
 
-  Serial.println(fmod(5.5,2.5));
+  Serial.println(fmod(5.5,2.5));  // nur test
   delay(1000);
 }
 
