@@ -61,7 +61,7 @@ void setup()
 
 
   // Daylight saving time activ (false = standard time, true = daylight saving time +1)
-  bool DaylightSavingAtSetup = DST(tmYearToCalendar(tm.Year), tm.Month, tm.Day, tm.Hour, tm.Minute);
+  bool DaylightSavingAtSetup = DaylightSaving(tmYearToCalendar(tm.Year), tm.Month, tm.Day, tm.Hour, tm.Minute);
   // DaylightSaving adjustment, RTC should work with standard time
   if (DaylightSavingAtSetup) unixtime = unixtime - 3600;
   unixtime = unixtime - (TimeZone * 3600);      //Zeitzone verrechnen
